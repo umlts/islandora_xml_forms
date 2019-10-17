@@ -155,11 +155,6 @@
 				</xsl:for-each>
 			</dc:subject>
 		</xsl:for-each>
-		<xsl:for-each select="mods:geographic">
-			<dc:coverage>
-				<xsl:value-of select="."/>
-			</dc:coverage>
-		</xsl:for-each>
 		<xsl:for-each select="mods:hierarchicalGeographic">
 			<dc:coverage>
 				<xsl:for-each select="mods:continent|mods:country|mods:province|mods:region|mods:state|mods:territory|mods:county|mods:city|mods:island|mods:area">
@@ -173,6 +168,8 @@
 				<xsl:value-of select="."/>
 			</dc:coverage>
 		</xsl:for-each>
+	</xsl:template>
+	<xsl:template match="mods:subject[not(@authority='local')][mods:temporal]">
 		<xsl:if test="mods:temporal">
 			<dc:coverage>
 				<xsl:for-each select="mods:temporal">
@@ -191,6 +188,14 @@
 		</xsl:if>
 	</xsl:template>
 
+	<xsl:template match="mods:subject[not(@authority='local')][mods:geographic]">
+		<xsl:for-each select="mods:geographic">
+			<dc:coverage>
+				<xsl:value-of select="."/>
+			</dc:coverage>
+		</xsl:for-each>
+	</xsl:template>
+	
 	<xsl:template match="mods:abstract | mods:tableOfContents | mods:note">
 		<dc:description>
 			<xsl:value-of select="."/>
@@ -238,7 +243,7 @@
 	<xsl:template match="mods:temporal[@point!='start' and @point!='end']  ">
 		<xsl:value-of select="."/>
 	</xsl:template>
-	<xsl:template match="mods:genre">
+	<xsl:template match="mods:genre[not(@authority='local')]">
 		<xsl:choose>
 			<xsl:when test="@authority='dct'">
 				<dc:type>
@@ -391,7 +396,7 @@
 		<xsl:variable name="name">
 			<xsl:for-each select="mods:namePart[not(@type)]">
 				<xsl:value-of select="."/>
-				<xsl:text> </xsl:text>
+				<xsl:text></xsl:text>
 			</xsl:for-each>
 			<xsl:value-of select="mods:namePart[@type='family']"/>
 			<xsl:if test="mods:namePart[@type='given']">
@@ -402,11 +407,6 @@
 				<xsl:text>, </xsl:text>
 				<xsl:value-of select="mods:namePart[@type='date']"/>
 				<xsl:text/>
-			</xsl:if>
-			<xsl:if test="mods:displayForm">
-				<xsl:text> (</xsl:text>
-				<xsl:value-of select="mods:displayForm"/>
-				<xsl:text>) </xsl:text>
 			</xsl:if>
 			<xsl:for-each select="mods:role[mods:roleTerm[@type='text']!='creator']">
 				<xsl:text> (</xsl:text>
